@@ -1,0 +1,67 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dify-ssrf
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: dify-ssrf
+          image: ubuntu/squid:latest
+          env:
+            - name: HTTP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: SSRF_HTTP_PORT
+            - name: COREDUMP_DIR
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: SSRF_COREDUMP_DIR
+            - name: REVERSE_PROXY_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: SSRF_REVERSE_PROXY_PORT
+            - name: SANDBOX_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: SSRF_SANDBOX_HOST
+            - name: SANDBOX_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: SANDBOX_PORT
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 300m
+              memory: 300Mi
+          ports:
+            - containerPort: 3128
+              name: dify-ssrf
+          volumeMounts:
+            - name: ssrf-proxy-config
+              mountPath: /etc/squid/
+            - name: ssrf-proxy-entrypoint
+              mountPath: /tmp/
+          command:
+            [
+              "sh",
+              "-c",
+              "cp /tmp/docker-entrypoint-mount.sh /docker-entrypoint.sh && sed -i 's/\r$$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh && /docker-entrypoint.sh",
+            ]
+      volumes:
+        - name: ssrf-proxy-config
+          configMap:
+            name: ssrf-proxy-config
+        - name: ssrf-proxy-entrypoint
+          configMap:
+            name: ssrf-proxy-entrypoint
+      restartPolicy: Always

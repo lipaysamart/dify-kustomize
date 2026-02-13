@@ -1,0 +1,11 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: dify-nginx
+spec:
+  type: ClusterIP
+  ports:
+    - name: dify-nginx
+      port: 80
+      targetPort: 80

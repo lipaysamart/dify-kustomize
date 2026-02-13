@@ -1,0 +1,16 @@
+resources:
+  - deployment.yaml
+  - service.yaml
+labels:
+  - pairs:
+      app.kubernetes.io/name: dify-ssrf
+    includeSelectors: true
+configMapGenerator:
+  - name: ssrf-proxy-entrypoint
+    files:
+      - docker-entrypoint-mount.sh=docker-entrypoint-mount.sh
+  - name: ssrf-proxy-config
+    files:
+      - squid.conf=squid.conf
+generatorOptions:
+  disableNameSuffixHash: true

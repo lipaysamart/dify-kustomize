@@ -1,0 +1,25 @@
+---
+- op: replace
+  path: /data/CONSOLE_API_URL
+  value: https://dev.example.com
+- op: replace
+  path: /data/CONSOLE_WEB_URL
+  value: https://dev.example.com
+- op: replace
+  path: /data/SERVICE_API_URL
+  value: https://dev.example.com
+- op: replace
+  path: /data/APP_API_URL
+  value: https://dev.example.com
+- op: replace
+  path: /data/APP_WEB_URL
+  value: https://dev.example.com
+- op: replace
+  path: /data/CODE_MAX_STRING_ARRAY_LENGTH
+  value: "100"
+- op: replace
+  path: /data/CODE_MAX_OBJECT_ARRAY_LENGTH
+  value: "100"
+- op: replace
+  path: /data/REDIS_DB
+  value: "15"

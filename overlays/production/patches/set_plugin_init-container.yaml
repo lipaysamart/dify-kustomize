@@ -1,0 +1,14 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: dify-plugin-daemon
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: wait-for-postgres
+          command:
+            - "sh"
+            - "-c"
+            - "until pg_isready -h postgres.dbs.svc -U postgres -d dify; do echo waiting for postgres; sleep 2; done;"

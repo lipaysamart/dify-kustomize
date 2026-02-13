@@ -1,0 +1,51 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dify-web
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: dify-web
+          image: langgenius/dify-web:1.11.1
+          env:
+            - name: EDITION
+              value: SELF_HOSTED
+            - name: "PM2_INSTANCES"
+              value: "2"
+            - name: NEXT_TELEMETRY_DISABLED
+              value: "0"
+            - name: TEXT_GENERATION_TIMEOUT_MS
+              value: "60000"
+            - name: CONSOLE_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: CONSOLE_API_URL
+            - name: APP_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: APP_API_URL
+            - name: SENTRY_DSN
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: WEB_SENTRY_DSN
+            - name: NEXT_PUBLIC_COOKIE_DOMAIN
+              value: ""
+            - name: AMPLITUDE_API_KEY
+              value: ""
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          ports:
+            - containerPort: 3000
+          imagePullPolicy: IfNotPresent

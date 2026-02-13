@@ -1,0 +1,30 @@
+resources:
+  - persistentvolumeclaim.yaml
+configMapGenerator:
+  - name: dify-shared-config
+    envs:
+      - dify-shared-config
+secretGenerator:
+  - name: dify-shared-secret
+    literals:
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=difyai123456
+      - DB_HOST=dify-postgres
+      - POSTGRES_PASSWORD=difyai123456
+      - REDIS_HOST=dify-redis
+      - REDIS_USERNAME=
+      - REDIS_PASSWORD=difyai123456
+      - REDIS_SENTINEL_SERVICE_NAME=
+      - REDIS_SENTINEL_USERNAME=
+      - REDIS_SENTINEL_PASSWORD=
+      - REDIS_CLUSTERS_PASSWORD=
+      - CELERY_BROKER_URL=redis://:difyai123456@dify-redis:6379/1
+      - OPENAI_API_BASE=https://api.openai.com/v1
+      - WEAVIATE_ENDPOINT=http://dify-weaviate:8080
+      - WEAVIATE_API_KEY=WVF5YThaHlkYwhGUSmCRgsX3tD5ngdN8pkih
+      - WEAVIATE_AUTHENTICATION_APIKEY_ALLOWED_KEYS=WVF5YThaHlkYwhGUSmCRgsX3tD5ngdN8pkih
+      - PLUGIN_DAEMON_KEY=lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi
+      - PLUGIN_DIFY_INNER_API_KEY=QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1
+
+generatorOptions:
+  disableNameSuffixHash: true

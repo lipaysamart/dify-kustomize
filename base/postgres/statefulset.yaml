@@ -1,0 +1,80 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: dify-postgres
+spec:
+  serviceName: "dify-postgres"
+  replicas: 1
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: default
+        resources:
+          requests:
+            storage: 1Gi
+  template:
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: dify-postgres
+          image: postgres:15-alpine
+          env:
+            - name: PGUSER
+              value: postgres
+            - name: POSTGRES_DB
+              value: dify
+            - name: PGDATA
+              value: /var/lib/postgresql/data
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credential
+                  key: POSTGRES_PASSWORD
+
+          # command:
+          # - "postgres"
+          # - "-c"
+          # - "max_connections=100"
+          # - "-c"
+          # - "shared_buffers=128MB"
+          # - "-c"
+          # - "work_mem=4MB"
+          # - "-c"
+          # - "maintenance_work_mem=64MB"
+          # - "-c"
+          # - "effective_cache_size=4096MB"
+          # - "-c"
+          # - "statement_timeout=0"
+          # - "-c"
+          # - "idle_in_transaction_session_timeout=0"
+
+          livenessProbe:
+            exec:
+              command:
+                - "pg_isready"
+                - "-U"
+                - "$(PGUSER)"
+                - "-d"
+                - "$(POSTGRES_DB)"
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 10
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          ports:
+            - containerPort: 5432
+              name: postgres-port
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data

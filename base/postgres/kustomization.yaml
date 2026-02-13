@@ -1,0 +1,11 @@
+resources:
+  - statefulset.yaml
+  - service.yaml
+secretGenerator:
+  - name: postgres-credential
+    literals:
+      - POSTGRES_PASSWORD="difyai123456"
+labels:
+  - pairs:
+      app.kubernetes.io/instance: postgres
+    includeSelectors: true

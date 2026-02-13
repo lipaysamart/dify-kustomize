@@ -1,0 +1,91 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: dify-api
+spec:
+  replicas: 1
+  serviceName: dify-api
+  template:
+    spec:
+      volumes:
+        - name: dify-api-storage
+          persistentVolumeClaim:
+            claimName: dify-api-storage
+      initContainers:
+        - name: init-permissions
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - |
+              FLAG_FILE="/app/api/storage/.init_permissions"
+              if [ -f "$${FLAG_FILE}" ]; then
+                echo "Permissions already initialized. Exiting."
+                exit 0
+              fi
+              echo "Initializing permissions for /app/api/storage"
+              chown -R 1001:1001 /app/api/storage && touch "$${FLAG_FILE}"
+              echo "Permissions initialized. Exiting."
+          volumeMounts:
+            - name: dify-api-storage
+              mountPath: /app/api/storage
+      containers:
+        - name: dify-api
+          image: langgenius/dify-api:1.11.1
+          envFrom:
+            - configMapRef:
+                name: dify-shared-config
+            - secretRef:
+                name: dify-shared-secret
+          env:
+            - name: MODE
+              value: api
+            - name: SENTRY_DSN
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: API_SENTRY_DSN
+            - name: SENTRY_TRACES_SAMPLE_RATE
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: API_SENTRY_TRACES_SAMPLE_RATE
+            - name: SENTRY_PROFILES_SAMPLE_RATE
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: API_SENTRY_PROFILES_SAMPLE_RATE
+            - name: "PLUGIN_MAX_PACKAGE_SIZE"
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: PLUGIN_MAX_PACKAGE_SIZE
+            - name: "INNER_API_KEY_FOR_PLUGIN"
+              valueFrom:
+                secretKeyRef:
+                  name: dify-shared-secret
+                  key: PLUGIN_DIFY_INNER_API_KEY
+            - name: "PLUGIN_REMOTE_INSTALL_HOST"
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: EXPOSE_PLUGIN_DEBUGGING_HOST
+            - name: "PLUGIN_REMOTE_INSTALL_PORT"
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: EXPOSE_PLUGIN_DEBUGGING_PORT
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1
+              memory: 2Gi
+          ports:
+            - containerPort: 5001
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: dify-api-storage
+              mountPath: /app/api/storage

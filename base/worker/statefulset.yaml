@@ -1,0 +1,61 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: dify-worker
+spec:
+  serviceName: "dify-worker"
+  replicas: 1
+  template:
+    spec:
+      volumes:
+        - name: dify-api-storage
+          persistentVolumeClaim:
+            claimName: dify-api-storage
+      containers:
+        - name: dify-worker
+          image: langgenius/dify-api:1.11.1
+          ports:
+            - containerPort: 5001
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: dify-shared-config
+            - secretRef:
+                name: dify-shared-secret
+          env:
+            - name: MODE
+              value: worker
+            - name: SENTRY_DSN
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: API_SENTRY_DSN
+            - name: SENTRY_TRACES_SAMPLE_RATE
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: API_SENTRY_TRACES_SAMPLE_RATE
+            - name: SENTRY_PROFILES_SAMPLE_RATE
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: API_SENTRY_PROFILES_SAMPLE_RATE
+            - name: "INNER_API_KEY_FOR_PLUGIN"
+              valueFrom:
+                secretKeyRef:
+                  name: dify-shared-secret
+                  key: PLUGIN_DIFY_INNER_API_KEY
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+          volumeMounts:
+            - name: dify-api-storage
+              mountPath: /app/api/storage
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always

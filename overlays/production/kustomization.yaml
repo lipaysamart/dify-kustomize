@@ -1,0 +1,67 @@
+namespace: dify-test
+resources:
+  - ../../base/api/
+  - ../../base/worker/
+  - ../../base/worker-beta/
+  - ../../base/web/
+  - ../../base/sandbox/
+  - ../../base/ssrf/
+  - ../../base/weaviate/
+  - ../../base/plugin/
+  - ../../base/nginx/
+  - ../../base/shared/
+  - patches/http-route.yaml
+  - patches/set_api-storage.yaml
+
+images:
+  - name: langgenius/dify-api:1.11.1
+    newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-api
+    newTag: "1.11.1"
+  - name: langgenius/dify-web:1.11.1
+    newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-web
+    newTag: "1.11.1"
+  - name: nginx:stable
+    newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/nginx
+    newTag: "1.25"
+  - name: langgenius/dify-plugin-daemon:0.5.1-local
+    newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-plugin-daemon
+    newTag: "0.5.1-local"
+  - name: langgenius/dify-sandbox:0.2.12
+    newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-sandbox
+    newTag: "0.2.12"
+  - name: ubuntu/squid:latest
+    newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/squid
+    newTag: "latest"
+  - name: semitechnologies/weaviate:1.27.0
+    newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/weaviate
+    newTag: "1.27.0"
+  - name: postgres:15-alpine
+    newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/postgres
+    newTag: "15-alpine"
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+patches:
+  - path: patches/set_shared-config.yaml
+    target:
+      kind: ConfigMap
+      name: dify-shared-config
+  - path: patches/set_shared-secret.yaml
+    target:
+      kind: Secret
+      name: dify-shared-secret
+  - path: patches/set_plugin_init-container.yaml
+    target:
+      kind: StatefulSet
+      name: dify-plugin-daemon
+  - target:
+      version: v1
+      kind: PersistentVolume
+      name: dify-api-storage
+    patch: |-
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolume
+      metadata:
+        name: dify-api-storage

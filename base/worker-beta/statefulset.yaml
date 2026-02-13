@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: dify-worker-beat
+spec:
+  replicas: 1
+  serviceName: dify-worker-beat
+  template:
+    spec:
+      containers:
+        - name: dify-worker-beat
+          image: langgenius/dify-api:1.11.1
+          envFrom:
+            - configMapRef:
+                name: dify-shared-config
+            - secretRef:
+                name: dify-shared-secret
+          env:
+            - name: MODE
+              value: beat
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+          ports:
+            - containerPort: 5001
+          imagePullPolicy: IfNotPresent

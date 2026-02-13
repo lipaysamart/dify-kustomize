@@ -1,0 +1,14 @@
+resources:
+  - deployment.yaml
+  - service.yaml
+labels:
+  - pairs:
+      app.kubernetes.io/name: dify-sandbox
+    includeSelectors: true
+configMapGenerator:
+  - name: dify-sandbox-dependencies
+    files:
+      - python-requirements.txt=requirements.txt
+  - name: dify-sandbox-config
+    files:
+      - config.yaml=config.yaml

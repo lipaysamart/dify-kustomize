@@ -1,0 +1,17 @@
+resources:
+  - shared/
+  - api/
+  - nginx/
+  - plugin/
+  - sandbox/
+  - web/
+  - worker/
+  - worker-beta/
+  - weaviate/
+  - ssrf/
+  - redis/
+
+labels:
+  - pairs:
+      app.kubernetes.io/name: dify
+    includeSelectors: false

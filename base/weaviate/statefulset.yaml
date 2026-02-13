@@ -1,0 +1,109 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: dify-weaviate
+spec:
+  serviceName: "dify-weaviate"
+  replicas: 1
+  volumeClaimTemplates:
+    - metadata:
+        name: weaviate-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 1Gi
+  template:
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: dify-weaviate
+          image: semitechnologies/weaviate:1.27.0
+          ports:
+            - containerPort: 8080
+              name: weaviate-p
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1024Mi
+            requests:
+              cpu: 100m
+              memory: 50Mi
+          env:
+            - name: QUERY_DEFAULTS_LIMIT
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: WEAVIATE_QUERY_DEFAULTS_LIMIT
+            - name: AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: WEAVIATE_AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED
+            - name: PERSISTENCE_DATA_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: WEAVIATE_PERSISTENCE_DATA_PATH
+            - name: "DEFAULT_VECTORIZER_MODULE"
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: WEAVIATE_DEFAULT_VECTORIZER_MODULE
+            - name: "AUTHENTICATION_APIKEY_ENABLED"
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: WEAVIATE_AUTHENTICATION_APIKEY_ENABLED
+            - name: "AUTHENTICATION_APIKEY_ALLOWED_KEYS"
+              valueFrom:
+                secretKeyRef:
+                  name: dify-shared-secret
+                  key: WEAVIATE_AUTHENTICATION_APIKEY_ALLOWED_KEYS
+            - name: "AUTHENTICATION_APIKEY_USERS"
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: WEAVIATE_AUTHENTICATION_APIKEY_USERS
+            - name: "CLUSTER_HOSTNAME"
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: WEAVIATE_CLUSTER_HOSTNAME
+            - name: "AUTHORIZATION_ADMINLIST_ENABLED"
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: WEAVIATE_AUTHORIZATION_ADMINLIST_ENABLED
+            - name: "AUTHORIZATION_ADMINLIST_USERS"
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: WEAVIATE_AUTHORIZATION_ADMINLIST_USERS
+            - name: "WEAVIATE_DISABLE_TELEMETRY"
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: WEAVIATE_DISABLE_TELEMETRY
+            - name: "WEAVIATE_ENABLE_TOKENIZER_GSE"
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: WEAVIATE_ENABLE_TOKENIZER_GSE
+            - name: "WEAVIATE_ENABLE_TOKENIZER_KAGOME_JA"
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: WEAVIATE_ENABLE_TOKENIZER_KAGOME_JA
+            - name: "WEAVIATE_ENABLE_TOKENIZER_KAGOME_KR"
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: WEAVIATE_ENABLE_TOKENIZER_KAGOME_KR
+
+          volumeMounts:
+            - name: weaviate-data
+              mountPath: /var/lib/weaviate

@@ -1,0 +1,11 @@
+resources:
+  - statefulset.yaml
+  - service.yaml
+secretGenerator:
+  - name: redis-credential
+    literals:
+      - REDIS_PASSWORD="difyai123456"
+labels:
+  - pairs:
+      app.kubernetes.io/instance: redis
+    includeSelectors: true
