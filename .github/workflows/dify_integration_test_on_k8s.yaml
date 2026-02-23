@@ -1,0 +1,31 @@
+name: Kustomize Declarative Test
+
+on:
+  - pull_request
+  - push
+
+env:
+  KUBECTL_VERSION: "v1.35.0"
+  KUTTL_VERSION: "v0.25.0"
+
+jobs:
+  create-cluster:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Start Kind Cluster
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1
+        with:
+          kubectl_version: ${KUBECTL_VERSION}
+
+      # 2. Install KUTTL CLI
+      - name: Install KUTTL
+        run: |
+          curl -L https://github.com/kudobuilder/kuttl/releases/download/${KUTTL_VERSION}/kubectl-kuttl_${KUTTL_VERSION}_linux_x86_64 -o kubectl-kuttl
+          chmod +x ./kubectl-kuttl
+          sudo mv ./kubectl-kuttl /usr/local/bin/kubectl-kuttl
+
+      # 3. Run KUTTL Tests
+      - name: Run KUTTL Tests
+        run: |
+          kubectl-kuttl test ./tests/ --start-kind=false

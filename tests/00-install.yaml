@@ -1,0 +1,5 @@
+# tests/kustomize-logic/00-install.yaml
+apiVersion: kuttle.dev/v1beta1
+kind: TestStep
+commands:
+  - command: kubectl apply -k ../kustomize/base

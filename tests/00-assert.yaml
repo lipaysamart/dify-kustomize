@@ -1,0 +1,9 @@
+# tests/kustomize-logic/00-assert.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  # 注意：由于 Pod 名称通常带随机后缀，我们可以通过标签匹配
+  labels:
+    app.kubernetes.io/name: dify
+status:
+  phase: Running
