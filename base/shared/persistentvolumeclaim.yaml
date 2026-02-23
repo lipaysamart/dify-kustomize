@@ -4,14 +4,21 @@ metadata:
   name: dify-api-storage
 spec:
   capacity:
-    storage: 20Gi
+    storage: 1Gi
   volumeMode: Filesystem
   accessModes:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: local-storage
   local:
-    path: /mnt/data/dify
+    path: /tmp/kind-data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/os
+          operator: In
+          values:
+            - linux
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -22,5 +29,4 @@ spec:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 50Gi
-  storageClassName: local-storage
+      storage: 1Gi
