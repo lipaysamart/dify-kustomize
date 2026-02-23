@@ -8,6 +8,7 @@ resources:
   - worker/
   - worker-beta/
   - weaviate/
+  - postgres/
   - ssrf/
   - redis/
 
