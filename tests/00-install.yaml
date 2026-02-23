@@ -2,4 +2,4 @@
 apiVersion: kuttle.dev/v1beta1
 kind: TestStep
 commands:
-  - command: kubectl apply -k ../kustomize/base
+  - command: kubectl apply -k ../base
