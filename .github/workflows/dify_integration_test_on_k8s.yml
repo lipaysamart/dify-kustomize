@@ -33,7 +33,7 @@ jobs:
       # 3. Install KUTTL CLI
       - name: Install KUTTL
         run: |
-          krew install kuttl
+          kubectl krew install kuttl
           kubectl kuttl test --help
 
       # 4. Run KUTTL Tests
