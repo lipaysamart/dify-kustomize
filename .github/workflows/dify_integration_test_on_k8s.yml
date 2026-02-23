@@ -11,11 +11,15 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      # 1. Start Kind Cluster
+      # Checkout
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Start Kind Cluster
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1
 
-      # 2. Install Krew
+      # Install Krew
       - name: Install Krew
         run: |
           (
@@ -30,13 +34,13 @@ jobs:
           # 关键步骤：将 krew 的 bin 目录添加到 GitHub Actions 的全局 PATH 中
           echo "${KREW_ROOT:-$HOME/.krew}/bin" >> $GITHUB_PATH
 
-      # 3. Install KUTTL CLI
+      # Install KUTTL CLI
       - name: Install KUTTL
         run: |
           kubectl krew install kuttl
           kubectl kuttl test --help
 
-      # 4. Run KUTTL Tests
+      # Run KUTTL Tests
       - name: Run KUTTL Tests
         run: |
           kubectl kuttl test
