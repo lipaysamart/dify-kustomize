@@ -15,14 +15,28 @@ jobs:
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1
 
-      # 2. Install KUTTL CLI
+      # 2. Install Krew
+      - name: Install Krew
+        run: |
+          (
+            set -x; cd "$(mktemp -d)" &&
+            OS="$(uname | tr '[:upper:]' '[:lower:]')" &&
+            ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64/arm64/')" &&
+            KREW="krew-${OS}_${ARCH}" &&
+            curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" &&
+            tar zxvf "${KREW}.tar.gz" &&
+            ./"${KREW}" install krew
+          )
+          # 关键步骤：将 krew 的 bin 目录添加到 GitHub Actions 的全局 PATH 中
+          echo "${KREW_ROOT:-$HOME/.krew}/bin" >> $GITHUB_PATH
+
+      # 3. Install KUTTL CLI
       - name: Install KUTTL
         run: |
-          curl -L https://github.com/kudobuilder/kuttl/releases/download/${KUTTL_VERSION}/kubectl-kuttl_${KUTTL_VERSION}_linux_x86_64 -o kubectl-kuttl
-          chmod +x ./kubectl-kuttl
-          sudo mv ./kubectl-kuttl /usr/local/bin/kubectl-kuttl
+          krew install kuttl
+          kubectl kuttl test --help
 
-      # 3. Run KUTTL Tests
+      # 4. Run KUTTL Tests
       - name: Run KUTTL Tests
         run: |
           kubectl-kuttl test ./tests/ --start-kind=false
