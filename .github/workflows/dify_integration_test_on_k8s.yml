@@ -8,7 +8,7 @@ env:
   KUTTL_VERSION: "v0.25.0"
 
 jobs:
-  create-cluster:
+  test:
     runs-on: ubuntu-latest
     steps:
       # 1. Start Kind Cluster
@@ -39,4 +39,4 @@ jobs:
       # 4. Run KUTTL Tests
       - name: Run KUTTL Tests
         run: |
-          kubectl-kuttl test ./tests/ --start-kind=false
+          kubectl kuttl test ./tests/ --start-kind=false
