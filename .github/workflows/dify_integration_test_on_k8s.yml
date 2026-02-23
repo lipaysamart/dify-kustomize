@@ -39,4 +39,4 @@ jobs:
       # 4. Run KUTTL Tests
       - name: Run KUTTL Tests
         run: |
-          kubectl kuttl test ./tests/ --start-kind=false
+          kubectl kuttl test
