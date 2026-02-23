@@ -1,8 +1,12 @@
+[English](./README.en.md)
+
 ## 项目描述
 
 本项目提供了一组 kustomize 的基础资源，用于在 K8s 启动 Dify 服务。项目预配置了 `dev` 和 `prod` 环境。但它不一定满足你的需求，你可以根据需要来编写一个 `kustomization.yaml` 来定制你的环境覆盖 base 资源。
 
-**当前版本追踪上游 dify - v1.11.1**
+## 追踪版本
+
+当前追踪上游 Dify 版本：`v1.11.1`
 
 ## 前置要求
 
