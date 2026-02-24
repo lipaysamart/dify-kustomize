@@ -1,0 +1,16 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestAssert
+timeout: 60
+collectors:
+- type: pod
+  selector: app.kubernetes.io/name=dify
+  namespace: default
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/name: dify
+  namespace: default
+status:
+  phase: Running
