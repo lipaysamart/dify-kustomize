@@ -7,20 +7,6 @@ spec:
   replicas: 1
   template:
     spec:
-      # 持久化 squid.conf
-      initContainers:
-      - name: setup-config
-        image: busybox
-        command:
-        - sh
-        - -c
-        # 将只读的 ConfigMap 文件拷贝到可写的 emptyDir 卷中
-        - cp /mnt/squid/squid.conf.template /etc/squid/squid.conf.template
-        volumeMounts:
-        - name: ssrf-proxy-config
-          mountPath: /mnt/squid
-        - name: squid-writable-dir
-          mountPath: /etc/squid
       containers:
         - name: dify-ssrf
           image: ubuntu/squid:latest
@@ -56,13 +42,13 @@ spec:
               memory: 100Mi
             limits:
               cpu: 300m
-              memory: 2Gi
+              memory: 300Mi
           ports:
             - containerPort: 3128
               name: dify-ssrf
           volumeMounts:
-            - name: squid-writable-dir
-              mountPath: /etc/squid
+            - name: ssrf-proxy-config
+              mountPath: /etc/squid/
             - name: ssrf-proxy-entrypoint
               mountPath: /tmp/
           command:
@@ -75,8 +61,6 @@ spec:
         - name: ssrf-proxy-config
           configMap:
             name: ssrf-proxy-config
-        - name: squid-writable-dir
-          emptyDir: {}
         - name: ssrf-proxy-entrypoint
           configMap:
             name: ssrf-proxy-entrypoint

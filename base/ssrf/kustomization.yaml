@@ -11,6 +11,6 @@ configMapGenerator:
       - docker-entrypoint-mount.sh=docker-entrypoint-mount.sh
   - name: ssrf-proxy-config
     files:
-      - squid.conf.template=squid.conf.template
+      - squid.conf=squid.conf
 generatorOptions:
   disableNameSuffixHash: true
