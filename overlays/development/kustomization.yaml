@@ -13,7 +13,6 @@ resources:
   - ../../base/postgres/
   - ../../base/redis/
   - patches/http-route.yaml
-  - patches/set_api-storage.yaml
 
 images:
   - name: langgenius/dify-api:1.11.1
@@ -53,6 +52,10 @@ patches:
     target:
       kind: Secret
       name: dify-shared-secret
+  - path: patches/set_api-storage.yaml
+    target:
+      kind: PersistentVolumeClaim
+      name: dify-api-storage
   - target:
       version: v1
       kind: PersistentVolume
