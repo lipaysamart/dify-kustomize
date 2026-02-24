@@ -62,7 +62,7 @@ kubectl apply -k overlays/production
 | :----------------- | :------------- | :-------------- | :-------------- |
 | **Domain Config**  | N/A            | dev.example.com | app.example.com |
 | **Shared Storage** | LocalPV        | nfs             | nfs             |
-| **StorageClass**   | default        | Custom          | Custom          |
+| **StorageClass**   | N/A            | Custom          | Custom          |
 | **Namespace**      | default        | dify-test       | dify-prod       |
 | **Config Files**   | Default        | Custom          | Custom          |
 | **Images**         | Default        | Custom          | Custom          |
