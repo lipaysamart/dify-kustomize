@@ -62,11 +62,11 @@ kubectl apply -k overlays/production
 | :----------------- | :---------- | :-------------- | :-------------- |
 | **配置域名**       | N/A         | dev.example.com | app.example.com |
 | **Shared Storage** | LocalPV     | nfs             | nfs             |
-| **StorageClass**   | default     | 自定义          | 自定义          |
+| **StorageClass**   | N/A         | 自定义          | 自定义          |
 | **命名空间**       | default     | dify-test       | dify-prod       |
 | **配置文件**       | 默认        | 自定义          | 自定义          |
 | **镜像**           | 默认        | 自定义          | 自定义          |
-| **数据库配置**     | 默认        | 默认            | 自定义          |
+| **数据库**         | 默认        | 默认            | 自定义          |
 
 ## 感谢
 

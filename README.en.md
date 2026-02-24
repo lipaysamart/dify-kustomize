@@ -58,15 +58,15 @@ kubectl apply -k overlays/production
 
 ## Environment Comparison
 
-| Feature               | Base (Default) | Development     | Production      |
-| :----------------- | :---------- | :-------------- | :-------------- |
-| **Domain Config**       | N/A         | dev.example.com | app.example.com |
-| **Shared Storage** | LocalPV     | nfs             | nfs             |
-| **StorageClass**   | default     | Custom          | Custom          |
-| **Namespace**       | default     | dify-test       | dify-prod       |
-| **Config Files**       | Default        | Custom          | Custom          |
-| **Images**           | Default        | Custom          | Custom          |
-| **Database Config**     | Default        | Default            | Custom          |
+| Feature            | Base (Default) | Development     | Production      |
+| :----------------- | :------------- | :-------------- | :-------------- |
+| **Domain Config**  | N/A            | dev.example.com | app.example.com |
+| **Shared Storage** | LocalPV        | nfs             | nfs             |
+| **StorageClass**   | default        | Custom          | Custom          |
+| **Namespace**      | default        | dify-test       | dify-prod       |
+| **Config Files**   | Default        | Custom          | Custom          |
+| **Images**         | Default        | Custom          | Custom          |
+| **Database**       | Default        | Default         | Custom          |
 
 ## Credits
 
