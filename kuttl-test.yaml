@@ -4,3 +4,5 @@ testDirs:
 - ./tests/e2e/
 startKIND: false
 timeout: 180
+commands:
+  - command: kubectl apply -k ./base
