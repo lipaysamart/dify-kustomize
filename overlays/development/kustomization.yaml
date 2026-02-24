@@ -39,6 +39,9 @@ images:
   - name: postgres:15-alpine
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/postgres
     newTag: "15-alpine"
+  - name: redis:6-alpine
+    newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/redis
+    newTag: "6-alpine"
 
 generatorOptions:
   disableNameSuffixHash: true
