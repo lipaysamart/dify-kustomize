@@ -6,7 +6,7 @@
 
 ## 追踪版本
 
-当前追踪上游 Dify 版本：`v1.11.1`
+当前追踪上游 Dify 版本：`v1.12.1`
 
 ## 前置要求
 
@@ -71,3 +71,14 @@ kubectl apply -k overlays/production
 ## 感谢
 
 - [dify-kubernetes](https://github.com/Winson-030/dify-kubernetes)
+
+## 升级说明 (v1.11.1 → v1.12.1)
+
+### 安全性变更
+
+1. **SSL/TLS 协议强化**：Nginx 默认不再支持 TLSv1.1 协议，仅支持 TLSv1.2 和 TLSv1.3
+2. **Swagger UI 默认禁用**：出于安全考虑，Swagger UI 默认已禁用
+
+### 升级注意事项
+
+1. **镜像更新**：所有相关镜像需要更新到 1.12.1 版本

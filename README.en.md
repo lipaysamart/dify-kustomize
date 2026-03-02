@@ -6,7 +6,7 @@ This project provides a set of Kustomize base resources for deploying Dify servi
 
 ## Upstream Tracking
 
-Currently tracking upstream Dify version: `v1.11.1`
+Currently tracking upstream Dify version: `v1.12.1`
 
 ## Prerequisites
 
@@ -71,3 +71,14 @@ kubectl apply -k overlays/production
 ## Credits
 
 - [dify-kubernetes](https://github.com/Winson-030/dify-kubernetes)
+
+## Upgrade Guide (v1.11.1 → v1.12.1)
+
+### Security Changes
+
+1. **SSL/TLS Protocol Hardening**: Nginx no longer supports TLSv1.1 by default, only TLSv1.2 and TLSv1.3
+2. **Swagger UI Disabled by Default**: For security reasons, Swagger UI is now disabled by default
+
+### Upgrade Notes
+
+1. **Image Update**: All related images need to be updated to version 1.12.1
