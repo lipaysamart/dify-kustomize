@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: dify-web
-          image: langgenius/dify-web:1.11.1
+          image: langgenius/dify-web:1.12.1
           env:
             - name: EDITION
               value: SELF_HOSTED
