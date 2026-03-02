@@ -32,7 +32,7 @@ spec:
               mountPath: /app/api/storage
       containers:
         - name: dify-api
-          image: langgenius/dify-api:1.11.1
+          image: langgenius/dify-api:1.12.1
           envFrom:
             - configMapRef:
                 name: dify-shared-config
@@ -76,6 +76,11 @@ spec:
                 configMapKeyRef:
                   name: dify-shared-config
                   key: EXPOSE_PLUGIN_DEBUGGING_PORT
+            - name: "PLUGIN_DAEMON_TIMEOUT"
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: PLUGIN_DAEMON_TIMEOUT
           resources:
             requests:
               cpu: 100m

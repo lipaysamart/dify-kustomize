@@ -10,7 +10,7 @@ spec:
     spec:
       containers:
         - name: dify-worker-beat
-          image: langgenius/dify-api:1.11.1
+          image: langgenius/dify-api:1.12.1
           envFrom:
             - configMapRef:
                 name: dify-shared-config

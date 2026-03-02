@@ -17,16 +17,16 @@ resources:
 images:
   - name: langgenius/dify-api:1.11.1
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-api
-    newTag: "1.11.1"
+    newTag: "1.12.1"
   - name: langgenius/dify-web:1.11.1
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-web
-    newTag: "1.11.1"
+    newTag: "1.12.1"
   - name: nginx:stable
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/nginx
     newTag: "1.25"
   - name: langgenius/dify-plugin-daemon:0.5.1-local
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-plugin-daemon
-    newTag: "0.5.1-local"
+    newTag: "0.5.3-local"
   - name: langgenius/dify-sandbox:0.2.12
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-sandbox
     newTag: "0.2.12"
