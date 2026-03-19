@@ -9,12 +9,11 @@ spec:
     spec:
       containers:
         - name: dify-web
-          image: langgenius/dify-web:1.12.1
+          image: langgenius/dify-web:1.13.2
           env:
             - name: EDITION
               value: SELF_HOSTED
-            - name: "PM2_INSTANCES"
-              value: "2"
+            
             - name: NEXT_TELEMETRY_DISABLED
               value: "0"
             - name: TEXT_GENERATION_TIMEOUT_MS

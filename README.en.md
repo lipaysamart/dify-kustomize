@@ -6,7 +6,7 @@ This project provides a set of Kustomize base resources for deploying Dify servi
 
 ## Upstream Tracking
 
-Currently tracking upstream Dify version: `v1.12.1`
+Currently tracking upstream Dify version: `v1.13.2`
 
 ## Prerequisites
 
@@ -72,13 +72,25 @@ kubectl apply -k overlays/production
 
 - [dify-kubernetes](https://github.com/Winson-030/dify-kubernetes)
 
-## Upgrade Guide (v1.11.1 → v1.12.1)
+## Upgrade Guide (v1.12.1 → v1.13.2)
 
-### Security Changes
+### Image Updates
 
-1. **SSL/TLS Protocol Hardening**: Nginx no longer supports TLSv1.1 by default, only TLSv1.2 and TLSv1.3
-2. **Swagger UI Disabled by Default**: For security reasons, Swagger UI is now disabled by default
+1. **dify-api**: 1.12.1 → 1.13.2
+2. **dify-web**: 1.12.1 → 1.13.2
+3. **dify-plugin-daemon**: 0.5.3-local → 0.5.4-local
+
+### Configuration Changes
+
+1. **New Environment Variables**:
+   - `UV_CACHE_DIR`: uv package manager cache directory
+   - `REDIS_MAX_CONNECTIONS`: Redis max connections configuration
+   - `CELERY_TASK_ANNOTATIONS`: Celery task annotations configuration
+
+2. **Removed Environment Variables**:
+   - `PM2_INSTANCES`: Removed from web service
 
 ### Upgrade Notes
 
-1. **Image Update**: All related images need to be updated to version 1.12.1
+1. **Image Update**: All related images need to be updated to version 1.13.2
+2. **Configuration Update**: New environment variables have been added to `base/shared/dify-shared-config` and work with default values
