@@ -8,6 +8,15 @@ metadata:
 status:
   phase: Running
 ---
+apiVersion: v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: dify
+  namespace: default
+status:
+  readyReplicas: 1
+---
 apiVersion: kuttl.dev/v1beta1
 kind: TestAssert
 timeout: 60
