@@ -6,7 +6,7 @@
 
 ## 追踪版本
 
-当前追踪上游 Dify 版本：`v1.12.1`
+当前追踪上游 Dify 版本：`v1.13.2`
 
 ## 前置要求
 
@@ -72,13 +72,25 @@ kubectl apply -k overlays/production
 
 - [dify-kubernetes](https://github.com/Winson-030/dify-kubernetes)
 
-## 升级说明 (v1.11.1 → v1.12.1)
+## 升级说明 (v1.12.1 → v1.13.2)
 
-### 安全性变更
+### 镜像更新
 
-1. **SSL/TLS 协议强化**：Nginx 默认不再支持 TLSv1.1 协议，仅支持 TLSv1.2 和 TLSv1.3
-2. **Swagger UI 默认禁用**：出于安全考虑，Swagger UI 默认已禁用
+1. **dify-api**: 1.12.1 → 1.13.2
+2. **dify-web**: 1.12.1 → 1.13.2
+3. **dify-plugin-daemon**: 0.5.3-local → 0.5.4-local
+
+### 配置变更
+
+1. **新增环境变量**：
+   - `UV_CACHE_DIR`: uv 包管理工具缓存目录
+   - `REDIS_MAX_CONNECTIONS`: Redis 最大连接数配置
+   - `CELERY_TASK_ANNOTATIONS`: Celery 任务注解配置
+
+2. **移除环境变量**：
+   - `PM2_INSTANCES`: 已从 web 服务中移除
 
 ### 升级注意事项
 
-1. **镜像更新**：所有相关镜像需要更新到 1.12.1 版本
+1. **镜像更新**：所有相关镜像需要更新到 1.13.2 版本
+2. **配置更新**：新增的环境变量已添加到 `base/shared/dify-shared-config`，使用默认值即可正常工作
