@@ -32,7 +32,7 @@ spec:
               mountPath: /app/api/storage
       containers:
         - name: dify-api
-          image: langgenius/dify-api:1.12.1
+          image: langgenius/dify-api:1.13.2
           envFrom:
             - configMapRef:
                 name: dify-shared-config
