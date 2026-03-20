@@ -14,5 +14,5 @@ resources:
 
 labels:
   - pairs:
-      app.kubernetes.io/name: dify
-    includeSelectors: false
+      app.kubernetes.io/managed-by: kustomize
+    includeSelectors: true
