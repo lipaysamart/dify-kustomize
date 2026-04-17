@@ -1,8 +1,10 @@
 name: Kustomize Preview Deployment Test
 
 on:
-  - pull_request
-  - push
+  pull_request:
+  push:
+    branches:
+      - main
 
 env:
   KUTTL_VERSION: "v0.25.0"
