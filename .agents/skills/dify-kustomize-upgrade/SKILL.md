@@ -39,6 +39,7 @@ Extract from diff:
 - **New environment variables**: Only add if used in project
 - **Security changes**: TLS versions, Swagger UI defaults
 - **New services**: IRIS, etc.
+- **Nginx changes**: New location blocks, proxy settings, headers
 
 ### 3. Update Base Resources
 
@@ -50,26 +51,45 @@ Update image tags in:
 - `base/web/deployment.yaml`
 - `base/plugin/statefulset.yaml`
 
-### 4. Update Shared Config
+### 4. Compare Nginx Configuration
+
+Compare upstream nginx.conf with local:
+
+```bash
+curl -s "https://raw.githubusercontent.com/langgenius/dify/refs/tags/<NEW_VERSION>/docker/nginx/conf.d/default.conf.template" -o /tmp/upstream-nginx.conf
+diff -u base/nginx/nginx.conf /tmp/upstream-nginx.conf
+```
+
+**Important**: Local nginx.conf may have custom modifications. Carefully merge:
+
+- New location blocks from upstream
+- Updated proxy settings
+- New header configurations
+- **Preserve** local customizations (e.g., custom proxy paths, timeout settings)
+
+Document any nginx changes that were merged or intentionally skipped.
+
+### 5. Update Shared Config
 
 Update `base/shared/dify-shared-config`:
 
 - Modify changed variables (LANG, LC_ALL, etc.)
 - Add new required variables only if used
 
-### 5. Update Overlays
+### 6. Update Overlays
 
 Update `newTag` in:
 
 - `overlays/production/kustomization.yaml`
 - `overlays/development/kustomization.yaml`
 
-### 6. Update Documentation
+### 7. Update Documentation
 
 Update README files:
 
 - Version number in "追踪版本" section
 - Add "升级注意事项" section if applicable
+- Document nginx config changes if merged
 
 ## Version-Specific Changes
 
