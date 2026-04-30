@@ -30,6 +30,18 @@ spec:
         - path:
             type: PathPrefix
             value: /explore
+        - path:
+            type: PathPrefix
+            value: /socket.io
+        - path:
+            type: PathPrefix
+            value: /e
+        - path:
+            type: PathPrefix
+            value: /mcp
+        - path:
+            type: PathPrefix
+            value: /triggers
       backendRefs:
         - name: dify-nginx
           port: 80
