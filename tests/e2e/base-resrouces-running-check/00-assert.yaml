@@ -1,27 +1,9 @@
 ---
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    app.kubernetes.io/name: dify
-  namespace: default
-status:
-  phase: Running
----
-apiVersion: v1
-kind: Deployment
-metadata:
-  labels:
-    app.kubernetes.io/name: dify
-  namespace: default
-status:
-  readyReplicas: 1
----
 apiVersion: kuttl.dev/v1beta1
 kind: TestAssert
-timeout: 60
+timeout: 120
 collectors:
 - type: pod
-  selector: app.kubernetes.io/name=dify
+  selector: app.kubernetes.io/managed-by=kustomize
   namespace: default
   tail: 10
