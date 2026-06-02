@@ -91,6 +91,17 @@ Update README files:
 - Add "升级注意事项" section if applicable
 - Document nginx config changes if merged
 
+### 8. Update Changelogs
+
+Update [CHANGELOGS.md](../../../CHANGELOGS.md) with:
+
+- Image version changes
+- New / modified environment variables
+- Nginx configuration changes
+- Upgrade notes and precautions
+
+The changelog follows newest-to-oldest order, see the file for examples.
+
 ## Version-Specific Changes
 
 See [references/full-changes.md](references/full-changes.md) for detailed changes between specific versions.

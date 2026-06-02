@@ -70,7 +70,7 @@ kubectl apply -k overlays/production
 
 ## 变更日志
 
-详见 [CHANGE_LOGS.md](./CHANGE_LOGS.md)
+详见 [CHANGELOGS.md](./CHANGELOGS.md) Learn about historical upgrade changes
 
 ## 感谢
 
