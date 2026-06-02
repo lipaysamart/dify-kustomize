@@ -9,41 +9,34 @@ Upgrade Dify Kustomize resources to track new upstream Dify versions.
 
 ## Workflow
 
-### 1. Compare Docker Compose Files
+### 1. Compare & Analyze
 
 If user did NOT provide both old_version and new_version, ask user for version info.
 
-Use the compare script:
+Use the compare script and download the upstream nginx template in one pass:
 
 ```bash
-# Usage: scripts/compare.sh <old_version> <new_version> [output_file]
 ./scripts/compare.sh old_version new_version
+curl -s "https://raw.githubusercontent.com/langgenius/dify/refs/tags/<NEW_VERSION>/docker/nginx/conf.d/default.conf.template" -o /tmp/upstream-nginx.conf
 ```
 
-Or manually:
-
-```bash
+<!-- Fallback if compare.sh is unavailable:
 curl -s "https://raw.githubusercontent.com/langgenius/dify/refs/tags/<OLD_VERSION>/docker/docker-compose.yaml" -o /tmp/old.yaml
 curl -s "https://raw.githubusercontent.com/langgenius/dify/refs/tags/<NEW_VERSION>/docker/docker-compose.yaml" -o /tmp/new.yaml
 diff -u /tmp/old.yaml /tmp/new.yaml
-```
+-->
 
-Document changes in a diff file for reference.
-
-### 2. Identify Changes
-
-Extract from diff:
+Document changes in a diff file for reference, then extract:
 
 - **Image version changes**: api, worker, web, plugin-daemon, sandbox
-- **Modified environment variables**: LANG, LC_ALL, SSL protocols, etc.
-- **New environment variables**: Only add if used in project
+- **Modified environment variables** and **new environment variables** (only add if used in project)
 - **Security changes**: TLS versions, Swagger UI defaults
-- **New services**: IRIS, etc.
+- **New services**: e.g., api_websocket in v1.14.2
 - **Nginx changes**: New location blocks, proxy settings, headers
 
-### 3. Update Base Resources
+### 2. Update Resources
 
-Update image tags in:
+**a. Base image tags** in:
 
 - `base/api/statefulset.yaml`
 - `base/worker/statefulset.yaml`
@@ -51,56 +44,48 @@ Update image tags in:
 - `base/web/deployment.yaml`
 - `base/plugin/statefulset.yaml`
 
-### 4. Compare Nginx Configuration
-
-Compare upstream nginx.conf with local:
+**b. Nginx** — compare upstream template with local:
 
 ```bash
-curl -s "https://raw.githubusercontent.com/langgenius/dify/refs/tags/<NEW_VERSION>/docker/nginx/conf.d/default.conf.template" -o /tmp/upstream-nginx.conf
 diff -u base/nginx/nginx.conf /tmp/upstream-nginx.conf
 ```
 
-**Important**: Local nginx.conf may have custom modifications. Carefully merge:
+Carefully merge new location blocks, updated proxy settings, and new headers. **Preserve** local customizations (e.g., custom proxy paths, timeout settings). Document any changes merged or intentionally skipped.
 
-- New location blocks from upstream
-- Updated proxy settings
-- New header configurations
-- **Preserve** local customizations (e.g., custom proxy paths, timeout settings)
+**c. Shared config** — update `base/shared/dify-shared-config`:
 
-Document any nginx changes that were merged or intentionally skipped.
-
-### 5. Update Shared Config
-
-Update `base/shared/dify-shared-config`:
-
-- Modify changed variables (LANG, LC_ALL, etc.)
+- Modify changed variables
 - Add new required variables only if used
+- Pay special attention to `SANDBOX_*` and `CODE_EXECUTION_*` — these change frequently
 
-### 6. Update Overlays
-
-Update `newTag` in:
+**d. Overlays** — update `newTag` in:
 
 - `overlays/production/kustomization.yaml`
 - `overlays/development/kustomization.yaml`
 
-### 7. Update Documentation
+### 3. Handle New Services (conditional)
 
-Update README files:
+If upstream added new services (e.g., `api_websocket` in v1.14.2):
 
-- Version number in "追踪版本" section
-- Add "升级注意事项" section if applicable
-- Document nginx config changes if merged
+- Create corresponding base resources under `base/<service>/`
+- Add the new service to both overlays' `resources:` list
+- Check if existing overlay patches need to be adapted
 
-### 8. Update Changelogs
+### 4. Update Docs
 
-Update [CHANGELOGS.md](../../../CHANGELOGS.md) with:
+- Update version number in `README.md` "追踪版本" section; if the upgrade involves major changes (new services, security, breaking changes), add a brief note
+- Update [CHANGELOGS.md](../../../CHANGELOGS.md) with image versions, env vars, nginx changes, and upgrade notes. Follow newest-to-oldest order.
 
-- Image version changes
-- New / modified environment variables
-- Nginx configuration changes
-- Upgrade notes and precautions
+### 5. Verify
 
-The changelog follows newest-to-oldest order, see the file for examples.
+```bash
+# 验证 base 资源可以被正确渲染
+kubectl kustomize overlays/development > /dev/null && echo "✅ development overlay valid"
+kubectl kustomize overlays/production > /dev/null && echo "✅ production overlay valid"
+
+# 验证镜像标签已全部更新
+kubectl kustomize overlays/development | grep -E 'image:.*dify' | sort -u
+```
 
 ## Version-Specific Changes
 
