@@ -11,31 +11,6 @@ spec:
         - name: dify-ssrf
           image: ubuntu/squid:latest
           env:
-            - name: HTTP_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: dify-shared-config
-                  key: SSRF_HTTP_PORT
-            - name: COREDUMP_DIR
-              valueFrom:
-                configMapKeyRef:
-                  name: dify-shared-config
-                  key: SSRF_COREDUMP_DIR
-            - name: REVERSE_PROXY_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: dify-shared-config
-                  key: SSRF_REVERSE_PROXY_PORT
-            - name: SANDBOX_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: dify-shared-config
-                  key: SSRF_SANDBOX_HOST
-            - name: SANDBOX_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: dify-shared-config
-                  key: SANDBOX_PORT
           resources:
             requests:
               cpu: 100m
