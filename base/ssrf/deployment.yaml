@@ -10,7 +10,7 @@ spec:
       containers:
         - name: dify-ssrf
           image: ubuntu/squid:latest
-          env:
+          env: []
           resources:
             requests:
               cpu: 100m
