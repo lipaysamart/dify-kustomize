@@ -50,6 +50,8 @@ http_access allow localhost manager
 http_access deny manager
 # Allow internal services to access private networks
 http_access allow allowed_private_ips to_private_networks
+# Allow selected private targets (if configured via SSRF_PROXY_ALLOW_PRIVATE_IPS/DOMAINS)
+include /etc/squid/dify_allow_private.conf
 # Deny external access to private networks
 http_access deny to_private_networks
 http_access allow allowed_domains
@@ -127,5 +129,8 @@ access_log daemon:/var/log/squid/access.log dify_log
 
 # Access log to track concurrent requests and timeouts
 logfile_rotate 10
+
+# Middleware-only sandbox host bridge (if configured via SSRF_SANDBOX_PROXY_PORT)
+include /etc/squid/dify_sandbox_proxy.conf
 
 
