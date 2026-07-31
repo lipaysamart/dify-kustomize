@@ -6,7 +6,7 @@ This project provides a set of Kustomize base resources for deploying Dify servi
 
 ## Upstream Tracking
 
-Currently tracking upstream Dify version: `v1.14.0`
+Currently tracking upstream Dify version: `v1.15.0`
 
 ## Prerequisites
 

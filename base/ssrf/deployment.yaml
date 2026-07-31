@@ -7,35 +7,60 @@ spec:
   replicas: 1
   template:
     spec:
-      containers:
-        - name: dify-ssrf
+      initContainers:
+        - name: dify-ssrf-init
           image: ubuntu/squid:latest
+          command:
+            - sh
+            - -c
+            - cp /init/init.sh /tmp/init.sh && sed -i 's/\r$//' /tmp/init.sh && chmod +x /tmp/init.sh && /tmp/init.sh
           env:
             - name: HTTP_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: dify-shared-config
                   key: SSRF_HTTP_PORT
+                  name: dify-shared-config
             - name: COREDUMP_DIR
               valueFrom:
                 configMapKeyRef:
-                  name: dify-shared-config
                   key: SSRF_COREDUMP_DIR
-            - name: REVERSE_PROXY_PORT
+                  name: dify-shared-config
+            - name: SSRF_SANDBOX_PROXY_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: dify-shared-config
                   key: SSRF_REVERSE_PROXY_PORT
-            - name: SANDBOX_HOST
+                  name: dify-shared-config
+            - name: SSRF_SANDBOX_PROXY_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: dify-shared-config
                   key: SSRF_SANDBOX_HOST
+                  name: dify-shared-config
             - name: SANDBOX_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: dify-shared-config
                   key: SANDBOX_PORT
+                  name: dify-shared-config
+            - name: SSRF_PROXY_ALLOW_PRIVATE_IPS
+              valueFrom:
+                configMapKeyRef:
+                  key: SSRF_PROXY_ALLOW_PRIVATE_IPS
+                  name: dify-shared-config
+            - name: SSRF_PROXY_ALLOW_PRIVATE_DOMAINS
+              valueFrom:
+                configMapKeyRef:
+                  key: SSRF_PROXY_ALLOW_PRIVATE_DOMAINS
+                  name: dify-shared-config
+          volumeMounts:
+            - name: ssrf-proxy-template
+              mountPath: /template
+            - name: ssrf-proxy-entrypoint
+              mountPath: /init
+            - name: ssrf-proxy-conf
+              mountPath: /etc/squid/
+      containers:
+        - name: dify-ssrf
+          image: ubuntu/squid:latest
+          env: []
           resources:
             requests:
               cpu: 100m
@@ -47,7 +72,7 @@ spec:
             - containerPort: 3128
               name: dify-ssrf
           volumeMounts:
-            - name: ssrf-proxy-config
+            - name: ssrf-proxy-conf
               mountPath: /etc/squid/
             - name: ssrf-proxy-entrypoint
               mountPath: /tmp/
@@ -58,10 +83,12 @@ spec:
               "cp /tmp/docker-entrypoint-mount.sh /docker-entrypoint.sh && sed -i 's/\r$$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh && /docker-entrypoint.sh",
             ]
       volumes:
-        - name: ssrf-proxy-config
+        - name: ssrf-proxy-template
           configMap:
-            name: ssrf-proxy-config
+            name: ssrf-proxy-template
         - name: ssrf-proxy-entrypoint
           configMap:
             name: ssrf-proxy-entrypoint
+        - name: ssrf-proxy-conf
+          emptyDir: {}
       restartPolicy: Always
