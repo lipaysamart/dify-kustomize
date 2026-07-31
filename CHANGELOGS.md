@@ -23,6 +23,18 @@
    - 新增性能优化配置：连接池、请求缓冲区、超时设置、内存缓存等
    - entrypoint 支持通过 `SSRF_PROXY_ALLOW_PRIVATE_IPS` / `SSRF_PROXY_ALLOW_PRIVATE_DOMAINS` 动态生成私有网络白名单
 
+### Squid 白名单模式说明
+
+正向代理（3128）采用白名单模式，仅允许以下出站流量：
+
+- **私有网络**（`to_private_networks`）：默认拒绝所有私有 IP 段（10/8、172.16/12、192.168/16 等）的出站请求
+- **域名白名单**（`allowed_domains`）：仅允许 `.marketplace.dify.ai`
+- **源 IP**（`client_localnet`）：仅允许内网客户端访问
+- **兜底**（`deny all`）：未匹配规则的请求一律拒绝
+- **端口安全**：`Safe_ports` 和 `SSL_ports` 校验始终生效
+
+反向代理（8194）不受上述 ACL 限制，通过 `http_port 8194 accel vhost` + `http_access allow src_all` 全放通，专用于 sandbox 代码执行请求的转发。
+
 ### Nginx 配置变更
 
 1. **新增 `/openapi` location**：路由到 api 服务，支持 OpenAPI 端点
