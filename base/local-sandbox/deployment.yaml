@@ -37,6 +37,6 @@ spec:
                 - "http://localhost:5004/healthz"
           ports:
             - containerPort: 5004
-              name: dify-local-sandbox
+              name: local-sandbox
           imagePullPolicy: IfNotPresent
       restartPolicy: Always

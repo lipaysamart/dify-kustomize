@@ -8,5 +8,5 @@ spec:
     - port: 5050
       targetPort: 5050
       protocol: TCP
-      name: dify-agent-backend
+      name: agent-backend
   type: ClusterIP

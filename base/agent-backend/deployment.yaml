@@ -35,6 +35,6 @@ spec:
               memory: 1Gi
           ports:
             - containerPort: 5050
-              name: dify-agent-backend
+              name: agent-backend
           imagePullPolicy: IfNotPresent
       restartPolicy: Always
