@@ -6,7 +6,7 @@ This project provides a set of Kustomize base resources for deploying Dify servi
 
 ## Upstream Tracking
 
-Currently tracking upstream Dify version: `v1.15.0`
+Currently tracking upstream Dify version: `v1.16.1`
 
 ## Prerequisites
 
@@ -18,19 +18,21 @@ Currently tracking upstream Dify version: `v1.15.0`
 ```sh
 .
 ├── base # Base resources directory, containing default configurations for all services
-│   ├── api
-│   ├── kustomization.yaml
-│   ├── nginx
-│   ├── plugin
-│   ├── postgres
-│   ├── redis
-│   ├── sandbox
-│   ├── shared
-│   ├── ssrf
-│   ├── weaviate
-│   ├── web
-│   ├── worker
-│   └── worker-beta
+│   ├── agent-backend # Added in v1.16.1: Dify Agent backend service
+│   ├── agent-ssrf-proxy # Added in v1.16.1: dedicated SSRF proxy for Agent sandbox
+│   ├── kustomization.yaml
+│   ├── local-sandbox # Added in v1.16.1: Agent local sandbox
+│   ├── nginx
+│   ├── plugin
+│   ├── postgres
+│   ├── redis
+│   ├── sandbox
+│   ├── shared
+│   ├── ssrf
+│   ├── weaviate
+│   ├── web
+│   ├── worker
+│   └── worker-beta
 └── overlays # Environment-specific overrides
     ├── development # Development environment
     └── production # Production environment

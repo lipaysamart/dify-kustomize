@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: dify-web
-          image: langgenius/dify-web:1.15.0
+          image: langgenius/dify-web:1.16.1
           env:
             - name: EDITION
               value: SELF_HOSTED
@@ -18,6 +18,10 @@ spec:
               value: "0"
             - name: TEXT_GENERATION_TIMEOUT_MS
               value: "60000"
+            - name: WORKFLOW_GENERATION_TIMEOUT_MS
+              value: "180000"
+            - name: NEXT_PUBLIC_ENABLE_AGENT_V2
+              value: "true"
             - name: CONSOLE_API_URL
               valueFrom:
                 configMapKeyRef:

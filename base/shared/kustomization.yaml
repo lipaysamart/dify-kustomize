@@ -25,6 +25,9 @@ secretGenerator:
       - WEAVIATE_AUTHENTICATION_APIKEY_ALLOWED_KEYS=WVF5YThaHlkYwhGUSmCRgsX3tD5ngdN8pkih
       - PLUGIN_DAEMON_KEY=lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi
       - PLUGIN_DIFY_INNER_API_KEY=QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1
+      - DIFY_AGENT_API_TOKEN=dify-agent-run-token-for-dev-only
+      - DIFY_AGENT_SERVER_SECRET_KEY=MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY
+      - DIFY_AGENT_REDIS_URL=redis://:difyai123456@dify-redis:6379/2
 
 generatorOptions:
   disableNameSuffixHash: true

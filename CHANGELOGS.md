@@ -1,5 +1,49 @@
 # 变更日志
 
+## v1.15.0 → v1.16.1
+
+### 镜像更新
+
+1. **dify-api**: 1.15.0 → 1.16.1
+2. **dify-web**: 1.15.0 → 1.16.1
+3. **dify-plugin-daemon**: 0.6.3-local (不变)
+4. **dify-sandbox**: 0.2.15 (不变)
+5. **dify-agent-backend**: 新增（v1.16.1 新服务）
+6. **dify-agent-local-sandbox**: 新增（v1.16.1 新服务）
+
+### 新增服务（Dify Agent 功能栈）
+
+v1.16.1 上游新增了 Dify Agent（Agent 工作区/Shell 执行）功能栈，本次升级完整引入：
+
+1. **agent-backend**（`base/agent-backend/`）：Agent 后端服务，监听 5050 端口；依赖 Redis（db 2）、plugin_daemon、local_sandbox
+2. **local-sandbox**（`base/local-sandbox/`）：Agent 本地沙箱，监听 5004 端口，出站流量强制走 agent SSRF 代理（`HTTP_PROXY/HTTPS_PROXY`）
+3. **agent-ssrf-proxy**（`base/agent-ssrf-proxy/`）：Agent 沙箱专用 Squid 正向代理（3128），白名单模式仅允许：
+   - `dify-agent-backend` 的 `/agent-stub/*` 端点
+   - `dify-api` 的 `/files/*` 端点
+   - 拒绝其它所有私有网络目标（`to_private_networks`）
+4. 复用 `base/ssrf` 的 InitContainer 模板渲染模式：`init.sh` 渲染 `squid-agent.conf.template` 与 `squid-common.conf.template`（上游将公共配置拆分到此文件）
+
+### 配置变更
+
+1. **新增环境变量**（`base/shared/dify-shared-config`）：
+   - `AGENT_BACKEND_BASE_URL` / `AGENT_BACKEND_STREAM_READ_TIMEOUT_SECONDS` / `AGENT_BACKEND_STREAM_MAX_RECONNECTS` / `AGENT_BACKEND_RUN_TIMEOUT_SECONDS`：api/worker 访问 Agent 后端
+   - `DIFY_AGENT_REDIS_PREFIX` / `DIFY_AGENT_SHUTDOWN_GRACE_SECONDS` / `DIFY_AGENT_RUN_RETENTION_SECONDS`：Agent 后端运行参数
+   - `DIFY_AGENT_PLUGIN_DAEMON_URL` / `DIFY_AGENT_INNER_API_URL` / `DIFY_AGENT_SHELLCTL_ENTRYPOINT` / `DIFY_AGENT_SHELLCTL_AUTH_TOKEN` / `DIFY_AGENT_STUB_API_BASE_URL` / `DIFY_AGENT_SHELL_REDACT_PATTERNS`：Agent 服务间调用
+2. **新增 Secret 字段**（`base/shared/kustomization.yaml` 的 `dify-shared-secret`）：
+   - `DIFY_AGENT_API_TOKEN`：api/worker → Agent 后端 /runs 接口的 Bearer Token（api/worker 通过显式 `AGENT_BACKEND_API_TOKEN` 映射读取）
+   - `DIFY_AGENT_SERVER_SECRET_KEY`：Agent Stub Bearer Token 的 JWE 加密密钥（安全敏感，生产环境需替换开发默认值）
+   - `DIFY_AGENT_REDIS_URL`：Agent 后端 Redis 连接串（base: `dify-redis:6379/2`；overlay 覆盖为外部 Redis `redis.dbs.svc:6379/15`，与项目现有 Redis 约定一致）
+3. **Web**：新增 `WORKFLOW_GENERATION_TIMEOUT_MS=180000`、`NEXT_PUBLIC_ENABLE_AGENT_V2=true`（Agent UI 开关）
+4. **Nginx**：无需变更（upstream location 集合与 proxy 配置与 v1.15.0 完全一致，仅重构为 envsubst 模板结构）
+5. **SSRF/Squid**：无需变更（upstream 仅将公共配置拆分到 `squid-common.conf.template`，有效 ACL 不变；项目本地模板已内联全部规则）
+
+### 升级注意事项
+
+1. **安全默认值**：`DIFY_AGENT_API_TOKEN` / `DIFY_AGENT_SERVER_SECRET_KEY` 的 base 值沿用上游开发默认值，两个 overlay 的 secret patch 已替换为随机生成值；如需自定请修改 `overlays/*/patches/set_shared-secret.yaml`
+2. **Agent 文件访问**：Agent 沙箱通过代理访问 `dify-api` 的 `/files/*`，依赖 api 生成签名 URL 的主机名（`FILES_URL` / `INTERNAL_FILES_URL`）能被 local_sandbox 解析；如部署后文件上传/下载异常，请检查这两个变量
+
+---
+
 ## v1.14.2 → v1.15.0
 
 ### 镜像更新

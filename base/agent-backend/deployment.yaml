@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dify-agent-backend
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: dify-agent-backend
+          image: langgenius/dify-agent-backend:1.16.1
+          envFrom:
+            - configMapRef:
+                name: dify-shared-config
+            - secretRef:
+                name: dify-shared-secret
+          env:
+            - name: DIFY_AGENT_PLUGIN_DAEMON_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: dify-shared-secret
+                  key: PLUGIN_DAEMON_KEY
+            - name: DIFY_AGENT_INNER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: dify-shared-secret
+                  key: PLUGIN_DIFY_INNER_API_KEY
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          ports:
+            - containerPort: 5050
+              name: agent-backend
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
