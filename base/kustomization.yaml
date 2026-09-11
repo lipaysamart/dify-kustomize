@@ -1,6 +1,9 @@
 resources:
   - shared/
+  - agent-backend/
+  - agent-ssrf-proxy/
   - api/
+  - local-sandbox/
   - nginx/
   - plugin/
   - sandbox/

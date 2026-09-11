@@ -6,6 +6,9 @@ resources:
   - ../../base/web/
   - ../../base/sandbox/
   - ../../base/ssrf/
+  - ../../base/agent-backend/
+  - ../../base/agent-ssrf-proxy/
+  - ../../base/local-sandbox/
   - ../../base/weaviate/
   - ../../base/plugin/
   - ../../base/nginx/
@@ -15,10 +18,16 @@ resources:
 images:
   - name: langgenius/dify-api:1.11.1
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-api
-    newTag: "1.15.0"
+    newTag: "1.16.1"
   - name: langgenius/dify-web:1.11.1
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-web
-    newTag: "1.15.0"
+    newTag: "1.16.1"
+  - name: langgenius/dify-agent-backend
+    newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-agent-backend
+    newTag: "1.16.1"
+  - name: langgenius/dify-agent-local-sandbox
+    newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-agent-local-sandbox
+    newTag: "1.16.1"
   - name: nginx:stable
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/nginx
     newTag: "1.25"

@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dify-local-sandbox
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: dify-local-sandbox
+          image: langgenius/dify-agent-local-sandbox:1.16.1
+          env:
+            - name: SHELLCTL_AUTH_TOKEN
+              valueFrom:
+                configMapKeyRef:
+                  name: dify-shared-config
+                  key: DIFY_AGENT_SHELLCTL_AUTH_TOKEN
+            - name: HTTP_PROXY
+              value: http://dify-agent-ssrf:3128
+            - name: HTTPS_PROXY
+              value: http://dify-agent-ssrf:3128
+            - name: NO_PROXY
+              value: localhost,127.0.0.1
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          livenessProbe:
+            exec:
+              command:
+                - "curl"
+                - "-f"
+                - "http://localhost:5004/healthz"
+          ports:
+            - containerPort: 5004
+              name: dify-local-sandbox
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always

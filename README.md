@@ -6,7 +6,7 @@
 
 ## 追踪版本
 
-当前追踪上游 Dify 版本：`v1.15.0`
+当前追踪上游 Dify 版本：`v1.16.1`
 
 ## 前置要求
 
@@ -18,19 +18,21 @@
 ```sh
 .
 ├── base # 基础资源目录，包含所有服务的默认配置
-│   ├── api
-│   ├── kustomization.yaml
-│   ├── nginx
-│   ├── plugin
-│   ├── postgres
-│   ├── redis
-│   ├── sandbox
-│   ├── shared
-│   ├── ssrf
-│   ├── weaviate
-│   ├── web
-│   ├── worker
-│   └── worker-beta
+│   ├── agent-backend # v1.16.1 新增：Dify Agent 后端服务
+│   ├── agent-ssrf-proxy # v1.16.1 新增：Agent 沙箱专用 SSRF 代理
+│   ├── kustomization.yaml
+│   ├── local-sandbox # v1.16.1 新增：Agent 本地沙箱
+│   ├── nginx
+│   ├── plugin
+│   ├── postgres
+│   ├── redis
+│   ├── sandbox
+│   ├── shared
+│   ├── ssrf
+│   ├── weaviate
+│   ├── web
+│   ├── worker
+│   └── worker-beta
 └── overlays # 环境差异化覆盖
     ├── development # 开发环境
     └── production # 生产环境
