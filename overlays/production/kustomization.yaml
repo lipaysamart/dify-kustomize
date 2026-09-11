@@ -16,10 +16,10 @@ resources:
   - patches/http-route.yaml
 
 images:
-  - name: langgenius/dify-api:1.11.1
+  - name: langgenius/dify-api
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-api
     newTag: "1.16.1"
-  - name: langgenius/dify-web:1.11.1
+  - name: langgenius/dify-web
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-web
     newTag: "1.16.1"
   - name: langgenius/dify-agent-backend
@@ -31,10 +31,10 @@ images:
   - name: nginx:stable
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/nginx
     newTag: "1.25"
-  - name: langgenius/dify-plugin-daemon:0.5.1-local
+  - name: langgenius/dify-plugin-daemon
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-plugin-daemon
     newTag: "0.6.3-local"
-  - name: langgenius/dify-sandbox:0.2.12
+  - name: langgenius/dify-sandbox
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-sandbox
     newTag: "0.2.15"
   - name: ubuntu/squid:latest
