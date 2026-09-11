@@ -6,11 +6,12 @@ labels:
       app.kubernetes.io/name: dify-ssrf
     includeSelectors: true
 configMapGenerator:
+  - name: ssrf-proxy-template
+    files:
+      - squid.conf.template=squid.conf.template
   - name: ssrf-proxy-entrypoint
     files:
       - docker-entrypoint-mount.sh=docker-entrypoint-mount.sh
-  - name: ssrf-proxy-config
-    files:
-      - squid.conf=squid.conf
+      - init.sh=init.sh
 generatorOptions:
   disableNameSuffixHash: true

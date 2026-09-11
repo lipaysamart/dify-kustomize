@@ -1,5 +1,53 @@
 # 变更日志
 
+## v1.14.2 → v1.15.0
+
+### 镜像更新
+
+1. **dify-api**: 1.14.2 → 1.15.0
+2. **dify-web**: 1.14.2 → 1.15.0
+3. **dify-plugin-daemon**: 0.6.1-local → 0.6.3-local
+4. **dify-sandbox**: 0.2.15 (不变)
+
+### 配置变更
+
+1. **新增环境变量**：
+   - `SSRF_PROXY_ALLOW_PRIVATE_IPS`: SSRF 代理允许的私有 IP 白名单
+   - `SSRF_PROXY_ALLOW_PRIVATE_DOMAINS`: SSRF 代理允许的私有域名白名单
+
+2. **SSRF/Squid 重构**：
+   - squid.conf 切换为模板文件，启动时通过 entrypoint 脚本动态生成
+   - 反向代理到 sandbox 改为通过 `SSRF_SANDBOX_PROXY_PORT` 环境变量控制（等效于原 `SSRF_REVERSE_PROXY_PORT`）
+   - 新增 `to_private_networks` ACL，增强出站流量安全控制
+   - 新增 `allowed_domains`（marketplace.dify.ai）ACL 白名单
+   - 新增性能优化配置：连接池、请求缓冲区、超时设置、内存缓存等
+   - entrypoint 支持通过 `SSRF_PROXY_ALLOW_PRIVATE_IPS` / `SSRF_PROXY_ALLOW_PRIVATE_DOMAINS` 动态生成私有网络白名单
+
+### Squid 白名单模式说明
+
+正向代理（3128）采用白名单模式，仅允许以下出站流量：
+
+- **私有网络**（`to_private_networks`）：默认拒绝所有私有 IP 段（10/8、172.16/12、192.168/16 等）的出站请求
+- **域名白名单**（`allowed_domains`）：仅允许 `.marketplace.dify.ai`
+- **源 IP**（`client_localnet`）：仅允许内网客户端访问
+- **兜底**（`deny all`）：未匹配规则的请求一律拒绝
+- **端口安全**：`Safe_ports` 和 `SSL_ports` 校验始终生效
+
+反向代理（8194）不受上述 ACL 限制，通过 `http_port 8194 accel vhost` + `http_access allow src_all` 全放通，专用于 sandbox 代码执行请求的转发。
+
+### Nginx 配置变更
+
+1. **新增 `/openapi` location**：路由到 api 服务，支持 OpenAPI 端点
+
+### 升级注意事项
+
+1. **镜像更新**：所有相关镜像需要更新到 1.15.0 版本
+2. **SSRF/Squid 配置变更**：squid.conf 已切换为模板文件格式，在部署时会通过 entrypoint 脚本自动处理
+3. **配置更新**：新增的环境变量已添加到 `base/shared/dify-shared-config`，使用默认值即可正常工作
+4. **Nginx 更新**：`base/nginx/nginx.conf` 已添加 `/openapi` location
+
+---
+
 ## v1.14.0 → v1.14.2
 
 ### 镜像更新
