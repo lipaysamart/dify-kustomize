@@ -39,16 +39,9 @@ v1.16.1 上游新增了 Dify Agent（Agent 工作区/Shell 执行）功能栈，
 
 ### 升级注意事项
 
-1. **镜像同步**：本次修复了 overlay images 条目 `name` 携带旧版 tag（如 `langgenius/dify-api:1.11.1`）导致 kustomize 匹配失败、api/web/plugin-daemon/sandbox 一直从 Docker Hub 直拉的问题；现在所有镜像统一改写到阿里云镜像仓库，以下镜像需确认已存在于镜像仓库：
-   - `dify-api:1.16.1`
-   - `dify-web:1.16.1`
-   - `dify-plugin-daemon:0.6.3-local`
-   - `dify-sandbox:0.2.15`
-   - `dify-agent-backend:1.16.1`（新增）
-   - `dify-agent-local-sandbox:1.16.1`（新增）
-2. **安全默认值**：`DIFY_AGENT_API_TOKEN` / `DIFY_AGENT_SERVER_SECRET_KEY` 的 base 值沿用上游开发默认值，两个 overlay 的 secret patch 已替换为随机生成值；如需自定请修改 `overlays/*/patches/set_shared-secret.yaml`
-3. **网络隔离差异**：Docker Compose 通过独立网络将 local_sandbox 与 api 隔离，K8s 中未实施 NetworkPolicy，Agent 沙箱理论上可直连集群内服务（仅靠代理白名单限制出站），如需严格隔离请补充 NetworkPolicy
-4. **Agent 文件访问**：Agent 沙箱通过代理访问 `dify-api` 的 `/files/*`，依赖 api 生成签名 URL 的主机名（`FILES_URL` / `INTERNAL_FILES_URL`）能被 local_sandbox 解析；如部署后文件上传/下载异常，请检查这两个变量
+1. **安全默认值**：`DIFY_AGENT_API_TOKEN` / `DIFY_AGENT_SERVER_SECRET_KEY` 的 base 值沿用上游开发默认值，两个 overlay 的 secret patch 已替换为随机生成值；如需自定请修改 `overlays/*/patches/set_shared-secret.yaml`
+2. **网络隔离差异**：Docker Compose 通过独立网络将 local_sandbox 与 api 隔离，K8s 中未实施 NetworkPolicy，Agent 沙箱理论上可直连集群内服务（仅靠代理白名单限制出站），如需严格隔离请补充 NetworkPolicy
+3. **Agent 文件访问**：Agent 沙箱通过代理访问 `dify-api` 的 `/files/*`，依赖 api 生成签名 URL 的主机名（`FILES_URL` / `INTERNAL_FILES_URL`）能被 local_sandbox 解析；如部署后文件上传/下载异常，请检查这两个变量
 
 ---
 
