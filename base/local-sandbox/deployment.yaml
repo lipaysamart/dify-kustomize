@@ -7,15 +7,37 @@ spec:
   replicas: 1
   template:
     spec:
+      volumes:
+        - name: dify-local-sandbox-home
+          persistentVolumeClaim:
+            claimName: dify-local-sandbox-home
+        - name: dify-local-sandbox-workspace
+          persistentVolumeClaim:
+            claimName: dify-local-sandbox-workspace
+      initContainers:
+        - name: init-permissions
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - |
+              echo "Initializing permissions for /home/dify and /workspace"
+              chown 1000:1000 /home/dify /workspace
+              echo "Permissions initialized. Exiting."
+          volumeMounts:
+            - name: dify-local-sandbox-home
+              mountPath: /home/dify
+            - name: dify-local-sandbox-workspace
+              mountPath: /workspace
       containers:
         - name: dify-local-sandbox
-          image: langgenius/dify-agent-local-sandbox:1.16.1
+          image: langgenius/dify-agent-local-sandbox:1.17.1
           env:
             - name: SHELLCTL_AUTH_TOKEN
               valueFrom:
                 configMapKeyRef:
                   name: dify-shared-config
-                  key: DIFY_AGENT_SHELLCTL_AUTH_TOKEN
+                  key: DIFY_AGENT_LOCAL_SANDBOX_AUTH_TOKEN
             - name: HTTP_PROXY
               value: http://dify-agent-ssrf:3128
             - name: HTTPS_PROXY
@@ -39,4 +61,9 @@ spec:
             - containerPort: 5004
               name: local-sandbox
           imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: dify-local-sandbox-home
+              mountPath: /home/dify
+            - name: dify-local-sandbox-workspace
+              mountPath: /workspace
       restartPolicy: Always

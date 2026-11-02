@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: dify-agent-backend
-          image: langgenius/dify-agent-backend:1.16.1
+          image: langgenius/dify-agent-backend:1.17.1
           envFrom:
             - configMapRef:
                 name: dify-shared-config
