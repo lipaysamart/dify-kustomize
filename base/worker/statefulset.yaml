@@ -14,7 +14,7 @@ spec:
             claimName: dify-api-storage
       containers:
         - name: dify-worker
-          image: langgenius/dify-api:1.16.1
+          image: langgenius/dify-api:1.17.1
           ports:
             - containerPort: 5001
               protocol: TCP

@@ -18,22 +18,22 @@ resources:
 images:
   - name: langgenius/dify-api
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-api
-    newTag: "1.16.1"
+    newTag: "1.17.1"
   - name: langgenius/dify-web
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-web
-    newTag: "1.16.1"
+    newTag: "1.17.1"
   - name: langgenius/dify-agent-backend
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-agent-backend
-    newTag: "1.16.1"
+    newTag: "1.17.1"
   - name: langgenius/dify-agent-local-sandbox
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-agent-local-sandbox
-    newTag: "1.16.1"
+    newTag: "1.17.1"
   - name: nginx:stable
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/nginx
     newTag: "1.25"
   - name: langgenius/dify-plugin-daemon
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-plugin-daemon
-    newTag: "0.6.3-local"
+    newTag: "0.6.10-local"
   - name: langgenius/dify-sandbox
     newName: registry.cn-shenzhen.aliyuncs.com/lipaysam/dify-sandbox
     newTag: "0.2.15"
@@ -77,3 +77,31 @@ patches:
       kind: PersistentVolume
       metadata:
         name: dify-api-storage
+  - path: patches/set_local-sandbox-home-storage.yaml
+    target:
+      kind: PersistentVolumeClaim
+      name: dify-local-sandbox-home
+  - path: patches/set_local-sandbox-workspace-storage.yaml
+    target:
+      kind: PersistentVolumeClaim
+      name: dify-local-sandbox-workspace
+  - target:
+      version: v1
+      kind: PersistentVolume
+      name: dify-local-sandbox-home
+    patch: |-
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolume
+      metadata:
+        name: dify-local-sandbox-home
+  - target:
+      version: v1
+      kind: PersistentVolume
+      name: dify-local-sandbox-workspace
+    patch: |-
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolume
+      metadata:
+        name: dify-local-sandbox-workspace
