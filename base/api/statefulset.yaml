@@ -32,7 +32,7 @@ spec:
               mountPath: /app/api/storage
       containers:
         - name: dify-api
-          image: langgenius/dify-api:1.15.0
+          image: langgenius/dify-api:1.16.1
           envFrom:
             - configMapRef:
                 name: dify-shared-config
@@ -66,6 +66,11 @@ spec:
                 secretKeyRef:
                   name: dify-shared-secret
                   key: PLUGIN_DIFY_INNER_API_KEY
+            - name: "AGENT_BACKEND_API_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: dify-shared-secret
+                  key: DIFY_AGENT_API_TOKEN
             - name: "PLUGIN_REMOTE_INSTALL_HOST"
               valueFrom:
                 configMapKeyRef:

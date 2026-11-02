@@ -1,0 +1,69 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dify-agent-ssrf
+spec:
+  replicas: 1
+  template:
+    spec:
+      initContainers:
+        - name: dify-agent-ssrf-init
+          image: ubuntu/squid:latest
+          command:
+            - sh
+            - -c
+            - cp /init/init.sh /tmp/init.sh && sed -i 's/\r$//' /tmp/init.sh && chmod +x /tmp/init.sh && /tmp/init.sh
+          env:
+            - name: HTTP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: SSRF_HTTP_PORT
+                  name: dify-shared-config
+            - name: COREDUMP_DIR
+              valueFrom:
+                configMapKeyRef:
+                  key: SSRF_COREDUMP_DIR
+                  name: dify-shared-config
+          volumeMounts:
+            - name: agent-ssrf-proxy-template
+              mountPath: /template
+            - name: agent-ssrf-proxy-entrypoint
+              mountPath: /init
+            - name: agent-ssrf-proxy-conf
+              mountPath: /etc/squid/
+      containers:
+        - name: dify-agent-ssrf
+          image: ubuntu/squid:latest
+          env: []
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 300m
+              memory: 300Mi
+          ports:
+            - containerPort: 3128
+              name: dify-agent-ssrf
+          volumeMounts:
+            - name: agent-ssrf-proxy-conf
+              mountPath: /etc/squid/
+            - name: agent-ssrf-proxy-entrypoint
+              mountPath: /tmp/
+          command:
+            [
+              "sh",
+              "-c",
+              "cp /tmp/docker-entrypoint-mount.sh /docker-entrypoint.sh && sed -i 's/\r$$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh && /docker-entrypoint.sh",
+            ]
+      volumes:
+        - name: agent-ssrf-proxy-template
+          configMap:
+            name: agent-ssrf-proxy-template
+        - name: agent-ssrf-proxy-entrypoint
+          configMap:
+            name: agent-ssrf-proxy-entrypoint
+        - name: agent-ssrf-proxy-conf
+          emptyDir: {}
+      restartPolicy: Always
