@@ -23,3 +23,7 @@
 - op: replace
   path: /data/REDIS_DB
   value: "15"
+# Squid 不解析短名，保持与 kustomization.yaml 的 namespace 一致
+- op: replace
+  path: /data/DIFY_AGENT_SANDBOX_FILES_BASE_URL
+  value: http://dify-api.dify-test.svc.cluster.local:5001

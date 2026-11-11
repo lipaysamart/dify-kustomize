@@ -44,6 +44,7 @@
 4. **未部署的服务**：`api_websocket`（协作模式关闭，`ENABLE_COLLABORATION_MODE=false`）未纳入，故上游为其新增的 `init_permissions` 依赖与 storage 挂载无需适配。
 5. **Nginx 未变更**：上游把 upstream 改为变量 + `resolver 127.0.0.11`（Docker 内置 DNS）以避免启动顺序问题；K8s 下 Service ClusterIP 稳定，继续沿用静态 upstream。
 6. **Agent SSRF 代理白名单未放开**：上游为 agent_ssrf_proxy 增加 `SSRF_PROXY_ALLOW_PRIVATE_IPS/_DOMAINS`，本项目 agent 侧 Squid 保持仅允许 `dify-agent-backend /agent-stub/*` 与 `dify-api /files/*`，不引入私有网段放通。
+7. **Agent 侧内网地址必须使用全限定域名**：Squid 不套用 `/etc/resolv.conf` 的 search 域，经代理访问短名（如 `dify-api`）会返回 `ERR_DNS_FAIL` 503。因此 `squid-agent.conf.template` 额外用 `dstdom_regex` 匹配 `<service>.<namespace>.svc.cluster.local`，`DIFY_AGENT_SANDBOX_FILES_BASE_URL` 由各 overlay 覆盖为全限定域名（development/production 为 `dify-api.dify-test.svc.cluster.local`）。minikube/kind 等环境部署时同样需按实际命名空间覆盖。
 
 ---
 

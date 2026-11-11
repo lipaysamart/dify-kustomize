@@ -330,6 +330,8 @@ DIFY_AGENT_RUNTIME_BACKEND=local
 DIFY_AGENT_LOCAL_SANDBOX_ENDPOINT=http://dify-local-sandbox:5004
 DIFY_AGENT_LOCAL_SANDBOX_AUTH_TOKEN=
 # sandbox 可达的 Dify API 地址，供 dify-agent CLI 传输 /files/*
+# 该请求经 agent-ssrf 代理转发，而 Squid 不套用 resolv.conf 的 search 域，短名会 ERR_DNS_FAIL，
+# 因此各 overlay 需覆盖为 <service>.<namespace>.svc.cluster.local 形式
 DIFY_AGENT_SANDBOX_FILES_BASE_URL=http://dify-api:5001
 DIFY_AGENT_RUN_EVENT_STREAM_MAX_LENGTH=5000
 DIFY_AGENT_STREAM_TEXT_DELTA_COALESCING_ENABLED=true

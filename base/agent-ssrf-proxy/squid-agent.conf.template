@@ -6,8 +6,8 @@
 
 include /etc/squid/dify_common.conf
 
-acl dst_agent_backend dstdomain dify-agent-backend
-acl dst_dify_api dstdomain dify-api
+acl dst_agent_backend dstdom_regex -i ^dify-agent-backend(\.[a-z0-9-]+\.svc\.cluster\.local)?$
+acl dst_dify_api dstdom_regex -i ^dify-api(\.[a-z0-9-]+\.svc\.cluster\.local)?$
 acl path_files urlpath_regex -i ^/files/
 acl path_agent_stub urlpath_regex -i ^/agent-stub/
 
