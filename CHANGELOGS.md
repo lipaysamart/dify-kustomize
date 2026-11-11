@@ -1,5 +1,53 @@
 # 变更日志
 
+## v1.16.1 → v1.17.1
+
+### 镜像更新
+
+1. **dify-api**: 1.16.1 → 1.17.1（api / worker / worker-beta）
+2. **dify-web**: 1.16.1 → 1.17.1
+3. **dify-agent-backend**: 1.16.1 → 1.17.1
+4. **dify-agent-local-sandbox**: 1.16.1 → 1.17.1
+5. **dify-plugin-daemon**: 0.6.3-local → 0.6.10-local
+6. **dify-sandbox**: 0.2.15（不变）
+7. **weaviate**: 1.27.0（本次不升级，理由见「升级注意事项」）
+
+### 配置变更
+
+1. **移除环境变量**（`base/shared/dify-shared-config`，上游 1.17.1 已从 compose/.env 移除）：
+   - `AGENT_BACKEND_STREAM_READ_TIMEOUT_SECONDS` / `AGENT_BACKEND_STREAM_MAX_RECONNECTS` / `AGENT_BACKEND_RUN_TIMEOUT_SECONDS`
+   - `DIFY_AGENT_REDIS_PREFIX` / `DIFY_AGENT_SHUTDOWN_GRACE_SECONDS` / `DIFY_AGENT_RUN_RETENTION_SECONDS`
+2. **Agent 沙箱变量重命名**：
+   - `DIFY_AGENT_SHELLCTL_ENTRYPOINT` → `DIFY_AGENT_LOCAL_SANDBOX_ENDPOINT`，并新增 `DIFY_AGENT_RUNTIME_BACKEND=local`（显式选定 Home Snapshot + Sandbox 后端）
+   - `DIFY_AGENT_SHELLCTL_AUTH_TOKEN` → `DIFY_AGENT_LOCAL_SANDBOX_AUTH_TOKEN`；local-sandbox 容器内变量名仍为 `SHELLCTL_AUTH_TOKEN`，仅 ConfigMap 来源 key 改为新名称
+   - `base/local-sandbox/deployment.yaml` 与 agent-backend 通过 `envFrom` 同步生效，无需额外 env 映射
+3. **新增环境变量**：
+   - `DIFY_AGENT_SANDBOX_FILES_BASE_URL=http://dify-api:5001`：sandbox 内 dify-agent CLI 访问 `/files/*` 的 Dify API 地址
+   - `DIFY_AGENT_RUN_EVENT_STREAM_MAX_LENGTH` / `DIFY_AGENT_STREAM_TEXT_DELTA_COALESCING_ENABLED` / `_FLUSH_INTERVAL_MS` / `_MAX_CHARS`：Agent 事件流与文本 delta 合并参数（默认值与上游一致）
+   - `PLUGIN_MAX_FILE_SIZE=52428800`：plugin daemon 单文件上限
+4. **Web**：移除 `WORKFLOW_GENERATION_TIMEOUT_MS`（上游 1.17.1 已删除该变量）；`COOKIEYES_SITE_KEY` 在本项目未部署，无需改为 `TURNSTILE_SITE_KEY`
+5. **Plugin Daemon**：0.6.3 → 0.6.10 新增变量（`REDIS_USE_AZURE_MANAGED_IDENTITY`、`MAX_SERVERLESS_REQUEST_BYTES`、`PLUGIN_MODEL_INSTALLATIONS_CACHE_*`）均为可选且默认关闭，无需适配
+
+### Local Sandbox 存储
+
+1. 新增两个 PVC（`base/local-sandbox/persistentvolumeclaim.yaml`），对应上游 1.17.1 为 local_sandbox 新增的 named volume：
+   - `dify-local-sandbox-home` → 挂载 `/home/dify`（Home Snapshot）
+   - `dify-local-sandbox-workspace` → 挂载 `/workspace`
+2. 镜像以非 root 用户 `dify`（1000:1000）运行，新增 `init-permissions` initContainer 将两个卷根目录 chown 到 1000:1000
+3. 两个 overlay 将 PVC 覆盖为 `nfs` / `ReadWriteMany` / 20Gi，并删除 base 中的 local PV
+
+### 升级注意事项
+
+1. **Weaviate 未随本次升级**：上游把内置 Weaviate 从 1.27.0 升到 1.39.2，跨 12 个 minor，官方明确不支持一跳升级，硬重启可能静默、不可恢复地破坏向量索引。1.17.1 使用的 `weaviate-client` 4.22.0 兼容 1.27.0，故本次保持 1.27.0；如需升级必须按官方 runbook 逐级（1.27 → 1.28 → … → 1.38 → 1.39.2）优雅停服推进。
+2. **Agent run 事件保留期变化**：上游移除 `DIFY_AGENT_RUN_RETENTION_SECONDS` 并将默认值从 3 天改为 2 小时（Redis 占用治理）。如需保留更久，请在 `dify-shared-config` 显式设置。
+3. **数据库迁移**：1.17.1 含 3 个迁移（`accounts.normalized_email`、legacy model types 归一化、dataset API token 绑定表），由 api 启动时的 `flask db upgrade` 自动执行；其中 legacy model types 迁移不可逆，升级前请备份数据库。
+4. **未部署的服务**：`api_websocket`（协作模式关闭，`ENABLE_COLLABORATION_MODE=false`）未纳入，故上游为其新增的 `init_permissions` 依赖与 storage 挂载无需适配。
+5. **Nginx 未变更**：上游把 upstream 改为变量 + `resolver 127.0.0.11`（Docker 内置 DNS）以避免启动顺序问题；K8s 下 Service ClusterIP 稳定，继续沿用静态 upstream。
+6. **Agent SSRF 代理白名单未放开**：上游为 agent_ssrf_proxy 增加 `SSRF_PROXY_ALLOW_PRIVATE_IPS/_DOMAINS`，本项目 agent 侧 Squid 保持仅允许 `dify-agent-backend /agent-stub/*` 与 `dify-api /files/*`，不引入私有网段放通。
+7. **Agent 侧内网地址必须使用全限定域名**：Squid 不套用 `/etc/resolv.conf` 的 search 域，经代理访问短名（如 `dify-api`）会返回 `ERR_DNS_FAIL` 503。因此 `squid-agent.conf.template` 额外用 `dstdom_regex` 匹配 `<service>.<namespace>.svc.cluster.local`，`DIFY_AGENT_SANDBOX_FILES_BASE_URL` 由各 overlay 覆盖为全限定域名（development/production 为 `dify-api.dify-test.svc.cluster.local`）。minikube/kind 等环境部署时同样需按实际命名空间覆盖。
+
+---
+
 ## v1.15.0 → v1.16.1
 
 ### 镜像更新
